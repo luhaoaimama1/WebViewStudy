@@ -32,11 +32,11 @@ public class MainActivity extends AppCompatActivity {
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mProgressBar.setMax(100);
 
-        setCallback();
+//        setCallback();
 
 //        downloadNative();
 
-//        js();
+        js();
     }
 
     private void setCallback() {
@@ -126,6 +126,11 @@ public class MainActivity extends AppCompatActivity {
         public String HtmlcallJava() {
             System.out.println("Html call Java");
             return "Html call Java";
+        }
+        @JavascriptInterface
+        public String getVersion() {
+            System.out.println("Html call Java");
+            return "233";
         }
 
         @JavascriptInterface

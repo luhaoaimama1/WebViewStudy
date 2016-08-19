@@ -19,7 +19,8 @@
     <script type="text/javascript" language="javascript">
       
     function showHtmlcallJava(){  
-        var str = window.jsObj.HtmlcallJava();  
+        var str = window.jsObj.HtmlcallJava();
+        document.getElementById("id_input2").value=window.jsObj.getVersion();
         alert(str);  
     }  
       
@@ -36,6 +37,7 @@
         document.getElementById("id_input2").value = "Java call Html : " + param;   
     }  
 
+
     </script>
 </head>
 
@@ -48,7 +50,7 @@ hello IT-homer
 <br>
 <br>
 
-<input type="button" value="HtmlcallJava" onclick="showHtmlcallJava()"/>
+<input type="button" value="HtmlcallJava获取版本号" onclick="showHtmlcallJava()"/>
 <br>
 <input type="button" value="HtmlcallJava2" onclick="showHtmlcallJava2()"/>
 
@@ -68,6 +70,5 @@ hello IT-homer
 <input id="id_input2" style="width: 90%" type="text" value="null"/>
 <br>
 <input type="button" value="JavacallHtml2" onclick="window.jsObj.JavacallHtml2()"/>
-
 </body>
 </html>  
