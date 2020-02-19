@@ -1,9 +1,12 @@
 package com.zone.webview;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -18,6 +21,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import java.io.File;
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -69,6 +75,44 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
+        @Nullable
+        @Override
+        public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+//            return realInterceptRequest(view, url);
+            return super.shouldInterceptRequest(view,url);
+        }
+
+        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+        @Nullable
+        @Override
+        public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+            String url = request.getUrl().toString();
+//            return realInterceptRequest(view, url);
+            return super.shouldInterceptRequest(view,request);
+        }
+
+        private WebResourceResponse realInterceptRequest(WebView view, String url) {
+            WebResourceResponse response = null;
+            /** request.getUrl(): 获取拦截的url地址 */
+            /** 使用String中的contanins方法判断当前地址是否包含/app/ */
+            /** 当包含该请求时，截取文件名 */
+            if(url.startsWith("file")){  //拦截了本地文件加载了
+                try {
+                    /**
+                     使用getAssets().open()打开本地资源，其中*代表所有，其它：
+                     js: mimeType = "application/x-javascript";
+                     css: mimeType = "text/css";
+                     html: mimeType = "text/html";
+                     jpg/png:  mimeType = "image/png";
+                     */
+                    response = new WebResourceResponse("*", "UTF-8", getAssets().open("abcd.jpg"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return response;
+        }
+
         @Override
         public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
             super.onReceivedError(view, request, error);
@@ -117,8 +161,17 @@ public class MainActivity extends AppCompatActivity {
         WebSettings webSettings = mWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setDefaultTextEncodingName("utf-8");
+        //允许 webview 图片加载本地文件
+        webSettings.setAllowUniversalAccessFromFileURLs(true);
+        webSettings.setAllowFileAccess(true);
+        webSettings.setAllowFileAccessFromFileURLs(true);
+
         mWebView.addJavascriptInterface(insertObj, "jsObj");//js端:window.jsObj 获取到当前的java端的insertObj
         mWebView.loadUrl("file:///android_asset/js.html");
+        mWebView.setWebViewClient(mWebViewClient);
+        //        WebChromeClient主要提供网页加载过程中提供的数据内容，比如返回网页的 进度条，title,favicon等。
+        mWebView.setWebChromeClient(mWebChromeClient);
+
     }
 
     private Object insertObj = new Object() {
@@ -127,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("Html call Java");
             return "Html call Java";
         }
+
         @JavascriptInterface
         public String getVersion() {
             System.out.println("Html call Java");
@@ -156,7 +210,13 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mWebView.loadUrl("javascript: showFromHtml2('IT-homer blog')");
+
+                    String s = "file://" + new File(Environment.getExternalStorageDirectory(),
+                            "DCIM/weibo/img-00f31057981f10b0ca987eb6f466c35b.jpg").getPath();
+                    // 确保这个图片存在  并且手机存储权限还在！
+                    //todo zone  每个用力一个demo  拦截替换
+                    mWebView.loadUrl("javascript: showHtmlcallJava2('" + s + "')");
+//                    mWebView.loadUrl("javascript: showHtmlcallJava2('"+"https://github.com/"+"')");
                     Toast.makeText(MainActivity.this, "clickBtn2", Toast.LENGTH_SHORT).show();
                 }
             });

@@ -24,8 +24,9 @@
         alert(str);  
     }  
       
-    function showHtmlcallJava2(){  
-        var str = window.jsObj.HtmlcallJava2("IT-homer blog");  
+    function showHtmlcallJava2(path){
+        var img=document.getElementById("img");
+        img.src=path;
         alert(str);  
     }  
       
@@ -52,6 +53,8 @@ hello IT-homer
 
 <input type="button" value="HtmlcallJava获取版本号" onclick="showHtmlcallJava()"/>
 <br>
+<br>
+<br>
 <input type="button" value="HtmlcallJava2" onclick="showHtmlcallJava2()"/>
 
 <br>
@@ -70,5 +73,9 @@ hello IT-homer
 <input id="id_input2" style="width: 90%" type="text" value="null"/>
 <br>
 <input type="button" value="JavacallHtml2" onclick="window.jsObj.JavacallHtml2()"/>
+
+
+<img id="img" alt="上海鲜花港 - 郁金香" src="https://replace.com" style="width: 100%;height: 100%"/>
+
 </body>
 </html>  
